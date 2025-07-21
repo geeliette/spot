@@ -97,13 +97,13 @@ export default function ProfileScreen() {
               <Text style={styles.statLabel}>Rating</Text>
             </View>
           </View>
-          
-          <TouchableOpacity style={styles.editButton}>
-            <Link href="/(profile)/edit">
+
+          <Link href="/(profile)/edit" asChild>
+            <TouchableOpacity style={styles.editButton}>
               <Edit size={16} color="#8B5CF6" />
               <Text style={styles.editButtonText}>Edit Profile</Text>
-            </Link>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </Link>
         </View>
 
         {/* Workout Info */}

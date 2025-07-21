@@ -29,7 +29,7 @@ export default function EditProfileScreen() {
     if (status !== 'granted') return;
 
     const res = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images, 
+        mediaTypes: ['images'], 
         quality: 0.8,
     });
     if (!res.canceled && res.assets?.[0]?.uri) {
@@ -113,18 +113,24 @@ const styles = StyleSheet.create({
 
   avatarWrap: {
     alignSelf: 'center',
-    marginBottom: 32,
+    marginTop: 20,
   },
 
-  avatar: { width: 120, height: 120, borderRadius: 60 },
+  avatar: { 
+    width: 115, 
+    height: 115, 
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: '#FFFFFF', 
+  },
 
   cameraBtn: {
     position: 'absolute',
     bottom: 4,
     right: 4,
     backgroundColor: '#8B5CF6',
-    width: 32,
-    height: 32,
+    width: 30,
+    height: 30,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
@@ -134,26 +140,26 @@ const styles = StyleSheet.create({
 
   /* Header */
   title: {
-    fontSize: 25,
+    fontSize: 23,
     fontWeight: 'bold',
     paddingHorizontal: 24,
-    paddingTop: 25,
+    paddingTop: 15,
   },
 
   /* Scrollable form */
   formContainer: {
     flexGrow: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: 40,
     justifyContent: 'center',
   },
 
-  field: { marginBottom: 20 },
+  field: { marginBottom: 17 },
 
-  label: { fontSize: 14, marginBottom: 4, color: '#6B7280' },
+  label: { fontSize: 14, marginBottom: 3, color: '#6B7280' },
 
   input: {
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderWidth: 0.8,
+    borderColor: 'black',
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
