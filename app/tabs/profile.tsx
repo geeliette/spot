@@ -1,34 +1,22 @@
+import { Link } from 'expo-router';
 import { Bell, Calendar, Camera, Dumbbell, LocationEdit as Edit, Circle as HelpCircle, Instagram, LogOut, MapPin, Settings, Shield, Star } from 'lucide-react-native';
 import { useState } from 'react';
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TouchableOpacity,
-    View
+  Image,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useUser } from '../context/UserContext';
 
 export default function ProfileScreen() {
+  const { user: userProfile } = useUser();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [locationEnabled, setLocationEnabled] = useState(true);
-
-  const userProfile = {
-    name: 'Jordan Smith',
-    avatar: 'https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=400',
-    age: 28,
-    location: 'New York, NY',
-    workoutFrequency: '5x per week',
-    athleteType: 'Bodybuilder',
-    level: 'Intermediate',
-    description: 'Passionate about fitness and helping others reach their goals. Looking for consistent workout partners for strength training.',
-    instagramHandle: '@jordanfitness',
-    rating: 4.8,
-    workoutsSpoiled: 127,
-    isProfessional: false
-  };
 
   const ProfileSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <View style={styles.section}>
@@ -111,8 +99,10 @@ export default function ProfileScreen() {
           </View>
           
           <TouchableOpacity style={styles.editButton}>
-            <Edit size={16} color="#8B5CF6" />
-            <Text style={styles.editButtonText}>Edit Profile</Text>
+            <Link href="/(profile)/edit">
+              <Edit size={16} color="#8B5CF6" />
+              <Text style={styles.editButtonText}>Edit Profile</Text>
+            </Link>
           </TouchableOpacity>
         </View>
 
