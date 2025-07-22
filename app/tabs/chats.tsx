@@ -1,74 +1,36 @@
-import { MoveVertical as MoreVertical, Search } from 'lucide-react-native';
-import { useState } from 'react';
+import { Link } from 'expo-router';
+import { MoreVertical, Search } from 'lucide-react-native';
+import { useMemo, useState } from 'react';
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ago, useChatStore } from '../lib/chatStore';
 
-interface Chat {
-  id: string;
-  name: string;
-  avatar: string;
-  lastMessage: string;
-  timestamp: string;
-  unreadCount: number;
-  isOnline: boolean;
-}
+type Chat = import('../lib/chatStore').Chat;
 
 export default function ChatsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const chats: Chat[] = [
-    {
-      id: '1',
-      name: 'Sarah Martinez',
-      avatar: 'https://images.pexels.com/photos/3768916/pexels-photo-3768916.jpeg?auto=compress&cs=tinysrgb&w=400',
-      lastMessage: 'Sure! I have a session available at 3 PM tomorrow',
-      timestamp: '2m ago',
-      unreadCount: 2,
-      isOnline: true
-    },
-    {
-      id: '2',
-      name: 'Mike Chen',
-      avatar: 'https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=400',
-      lastMessage: 'Great run today! Same time tomorrow?',
-      timestamp: '1h ago',
-      unreadCount: 0,
-      isOnline: false
-    },
-    {
-      id: '3',
-      name: 'Jessica Torres',
-      avatar: 'https://images.pexels.com/photos/3823039/pexels-photo-3823039.jpeg?auto=compress&cs=tinysrgb&w=400',
-      lastMessage: 'Thank you! The yoga session was amazing',
-      timestamp: '3h ago',
-      unreadCount: 1,
-      isOnline: true
-    },
-    {
-      id: '4',
-      name: 'Alex Johnson',
-      avatar: 'https://images.pexels.com/photos/1431282/pexels-photo-1431282.jpeg?auto=compress&cs=tinysrgb&w=400',
-      lastMessage: 'Ready for leg day? 💪',
-      timestamp: '1d ago',
-      unreadCount: 0,
-      isOnline: false
-    }
-  ];
+  const chatObj = useChatStore((s) => s.chats);
+  const chats   = useMemo(() => Object.values(chatObj), [chatObj]);
 
   const filteredChats = chats.filter(chat =>
     chat.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const renderChatItem = (chat: Chat) => (
-    <TouchableOpacity key={chat.id} style={styles.chatItem} activeOpacity={0.7}>
+    <Link 
+      key={chat.id}
+      href={{ pathname: '/chat/[id]', params: { id: chat.id } }}
+      asChild>
+    <TouchableOpacity style={styles.chatItem} activeOpacity={0.7}>
       <View style={styles.avatarContainer}>
         <Image source={{ uri: chat.avatar }} style={styles.avatar} />
         {chat.isOnline && <View style={styles.onlineIndicator} />}
@@ -77,7 +39,11 @@ export default function ChatsScreen() {
       <View style={styles.chatContent}>
         <View style={styles.chatHeader}>
           <Text style={styles.chatName}>{chat.name}</Text>
-          <Text style={styles.timestamp}>{chat.timestamp}</Text>
+          <Text style={styles.timestamp}>
+            {chat.messages.length
+              ? ago(chat.messages.at(-1)!.ts)
+              : ''}
+          </Text>
         </View>
         
         <View style={styles.messageRow}>
@@ -100,6 +66,7 @@ export default function ChatsScreen() {
         <MoreVertical size={20} color="#9CA3AF" />
       </TouchableOpacity>
     </TouchableOpacity>
+    </Link>
   );
 
   return (
