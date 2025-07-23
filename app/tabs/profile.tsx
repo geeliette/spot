@@ -81,22 +81,12 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
           
-          <Text style={styles.name}>{userProfile.name}</Text>
+          <Text style={styles.name}>
+            {`${userProfile.name}, ${userProfile.age}`}
+          </Text>
           <Text style={styles.location}>
             <MapPin size={14} color="#6B7280" />  {userProfile.location}
           </Text>
-          
-          <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{userProfile.workoutsSpoiled}</Text>
-              <Text style={styles.statLabel}>Workouts</Text>
-            </View>
-            <View style={styles.statDivider} />
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{userProfile.rating}</Text>
-              <Text style={styles.statLabel}>Rating</Text>
-            </View>
-          </View>
 
           <Link href="/(profile)/edit" asChild>
             <TouchableOpacity style={styles.editButton}>
