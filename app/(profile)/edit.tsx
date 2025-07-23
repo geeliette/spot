@@ -4,13 +4,15 @@ import { Camera } from 'lucide-react-native';
 import React from 'react';
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TextInputProps,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '../context/UserContext';
@@ -45,6 +47,11 @@ export default function EditProfileScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={15}
+      >
       <View style={styles.avatarWrap}>
         <Image source={{ uri: draft.avatar }} style={styles.avatar} />
         <TouchableOpacity style={styles.cameraBtn} onPress={changeAvatar}>
@@ -96,6 +103,7 @@ export default function EditProfileScreen() {
           <Text style={styles.saveTxt}>Save</Text>
         </TouchableOpacity>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -167,6 +175,8 @@ const styles = StyleSheet.create({
   formContainer: {
     flexGrow: 1,
     paddingHorizontal: 40,
+    paddingTop: 15,
+    paddingBottom: 15,
     justifyContent: 'center',
   },
 
