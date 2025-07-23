@@ -11,8 +11,6 @@ type UserProfile = {
   level: string;
   description: string;
   instagramHandle: string;
-  rating: number;
-  workoutsSpoiled: number;
   isProfessional: boolean;
 };
 
@@ -32,8 +30,6 @@ const defaultUser: UserProfile = {
   description:
     'Passionate about fitness and helping others reach their goals. Looking for consistent workout partners for strength training.',
   instagramHandle: '@jordanfitness',
-  rating: 4.8,
-  workoutsSpoiled: 127,
   isProfessional: false,
 };
 

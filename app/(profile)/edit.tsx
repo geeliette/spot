@@ -144,9 +144,7 @@ const styles = StyleSheet.create({
   avatar: { 
     width: 115, 
     height: 115, 
-    borderRadius: 60,
-    borderWidth: 3,
-    borderColor: '#FFFFFF', 
+    borderRadius: 60
   },
 
   cameraBtn: {

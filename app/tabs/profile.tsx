@@ -1,12 +1,15 @@
 import { Link } from 'expo-router';
-import { Bell, Calendar, Camera, Dumbbell, LocationEdit as Edit, Circle as HelpCircle, Instagram, LogOut, MapPin, Settings, Shield, Star } from 'lucide-react-native';
+import { Bell, Calendar, Dumbbell, LocationEdit as Edit, Circle as HelpCircle, Instagram, LogOut, MapPin, Settings, Shield, Star } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   Image,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
@@ -14,9 +17,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '../context/UserContext';
 
 export default function ProfileScreen() {
-  const { user: userProfile } = useUser();
+  const { user: userProfile, updateUser } = useUser();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [locationEnabled, setLocationEnabled] = useState(true);
+
+  const [editingKey, setEditingKey] =
+  useState<null | 'workoutFrequency' | 'athleteType' | 'level' | 'instagramHandle'>(null);
 
   const ProfileSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
     <View style={styles.section}>
@@ -25,41 +31,123 @@ export default function ProfileScreen() {
     </View>
   );
 
-  const ProfileItem = ({ icon, title, value, onPress, showSwitch, switchValue, onSwitchChange }: {
-    icon: React.ReactNode;
-    title: string;
-    value?: string;
-    onPress?: () => void;
-    showSwitch?: boolean;
-    switchValue?: boolean;
-    onSwitchChange?: (value: boolean) => void;
-  }) => (
-    <TouchableOpacity 
-      style={styles.profileItem} 
-      onPress={onPress}
-      disabled={!onPress && !showSwitch}
-      activeOpacity={onPress ? 0.7 : 1}
+  type ProfileItemProps =
+  | {
+      icon: React.ReactNode;
+      title: string;
+      value: string;
+      fieldKey?: 'workoutFrequency' | 'athleteType' | 'level' | 'instagramHandle';
+      onPress?: () => void;
+      showSwitch?: false;
+    }
+  | {
+      icon: React.ReactNode;
+      title: string;
+      showSwitch: true;
+      switchValue: boolean;
+      onSwitchChange: (v: boolean) => void;
+    };
+
+    function BufferedInput({
+      initial,
+      onDone,
+    }: {
+      initial: string;
+      onDone: (final: string) => void;
+    }) {
+      const [text, setText] = useState(initial);
+    
+    return (
+      <TextInput
+        value={text}
+        onChangeText={setText} // local state
+        autoFocus
+        style={styles.inlineInput}
+        onEndEditing={() => onDone(text.trim())}
+        returnKeyType="done"
+      />
+    );
+  }
+
+  const ProfileItem = (props: ProfileItemProps) => {
+    if (props.showSwitch) {
+      const { icon, title, switchValue, onSwitchChange } = props;
+      return (
+        <View style={styles.profileItem}>
+          <View style={styles.profileItemLeft}>
+            {icon}
+            <Text style={styles.profileItemTitle}>{title}</Text>
+          </View>
+  
+          <Switch
+            value={switchValue}
+            onValueChange={onSwitchChange}
+            trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
+            thumbColor="#FFFFFF"
+          />
+        </View>
+      );
+    } 
+
+  // function save() {
+  //   if (fieldKey && draft.trim() && draft !== value) {
+  //     updateUser({ ...userProfile, [fieldKey]: draft.trim() });
+  //   }
+  //   setEditingKey(null);
+  // }
+
+  const { icon, title, value, fieldKey, onPress } = props;
+  const isEditing = editingKey === fieldKey;
+  if (isEditing) {
+    return (
+      <View style={styles.profileItem}>
+        <View style={styles.profileItemLeft}>
+          {icon}
+          <Text style={styles.profileItemTitle}>{title}</Text>
+        </View>
+  
+        <BufferedInput
+          initial={value}
+          onDone={(final) => {
+            // save only if changed
+            if (fieldKey && final && final !== value) {
+              updateUser({ ...userProfile, [fieldKey]: final });
+            }
+            setEditingKey(null);
+          }}
+        />
+      </View>
+    );
+  }
+   
+  return (
+    <TouchableOpacity
+      style={styles.profileItem}
+      onPress={() => {
+        if (fieldKey) {
+          setEditingKey(fieldKey);
+        }
+        props.onPress?.();
+      }}
+      activeOpacity={0.7}
     >
       <View style={styles.profileItemLeft}>
         {icon}
         <Text style={styles.profileItemTitle}>{title}</Text>
       </View>
-      
-      {showSwitch ? (
-        <Switch
-          value={switchValue}
-          onValueChange={onSwitchChange}
-          trackColor={{ false: '#E5E7EB', true: '#8B5CF6' }}
-          thumbColor="#FFFFFF"
-        />
-      ) : (
-        <Text style={styles.profileItemValue}>{value}</Text>
-      )}
+  
+      <Text style={styles.profileItemValue}>{value}</Text>
     </TouchableOpacity>
-  );
+    );
+  }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={0}   // adjust if you have a fixed header
+      >
       <ScrollView 
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
@@ -76,9 +164,6 @@ export default function ProfileScreen() {
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
             <Image source={{ uri: userProfile.avatar }} style={styles.avatar} />
-            <TouchableOpacity style={styles.cameraButton}>
-              <Camera size={16} color="#FFFFFF" />
-            </TouchableOpacity>
           </View>
           
           <Text style={styles.name}>
@@ -104,21 +189,25 @@ export default function ProfileScreen() {
             icon={<Dumbbell size={20} color="#6B7280" />}
             title="Workout Frequency"
             value={userProfile.workoutFrequency}
+            fieldKey='workoutFrequency'
           />
           <ProfileItem
             icon={<Star size={20} color="#6B7280" />}
             title="Athlete Type"
             value={userProfile.athleteType}
+            fieldKey='athleteType'
           />
           <ProfileItem
             icon={<Shield size={20} color="#6B7280" />}
             title="Experience Level"
             value={userProfile.level}
+            fieldKey='level'
           />
           <ProfileItem
             icon={<Instagram size={20} color="#6B7280" />}
             title="Instagram"
             value={userProfile.instagramHandle}
+            fieldKey='instagramHandle'
           />
         </ProfileSection>
 
@@ -179,6 +268,7 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -217,21 +307,6 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    borderWidth: 4,
-    borderColor: '#FFFFFF',
-  },
-  cameraButton: {
-    position: 'absolute',
-    bottom: 8,
-    right: 8,
-    backgroundColor: '#8B5CF6',
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#FFFFFF',
   },
   name: {
     fontSize: 24,
@@ -349,5 +424,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#8B5CF6',
+  },
+  inlineInput: {
+    fontSize: 16,
+    color: '#6B7280'
   },
 });
