@@ -3,13 +3,14 @@ import { useRouter } from 'expo-router';
 import { Camera } from 'lucide-react-native';
 import React from 'react';
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '../context/UserContext';
@@ -65,6 +66,12 @@ export default function EditProfileScreen() {
           onChange={handle('location')}
         />
         <Field
+          label="Age"
+          value={String(draft.age)}
+          keyboardType="number-pad"
+          onChange={handle('age')}
+        />
+        <Field
           label="Workout Frequency"
           value={draft.workoutFrequency}
           onChange={handle('workoutFrequency')}
@@ -97,19 +104,29 @@ const Field = ({
   label,
   value,
   onChange,
+  keyboardType,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  keyboardType?: TextInputProps['keyboardType'];
 }) => (
   <View style={styles.field}>
     <Text style={styles.label}>{label}</Text>
-    <TextInput value={value} onChangeText={onChange} style={styles.input} />
+    <TextInput 
+      value={value} 
+      onChangeText={onChange}
+      keyboardType={keyboardType}
+      style={styles.input} 
+    />
   </View>
 );
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
+  safeArea: { 
+    flex: 1,
+    backgroundColor: '#f9fafb' 
+  },
 
   avatarWrap: {
     alignSelf: 'center',

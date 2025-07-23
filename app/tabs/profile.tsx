@@ -82,7 +82,9 @@ export default function ProfileScreen() {
           </View>
           
           <Text style={styles.name}>
-            {`${userProfile.name}, ${userProfile.age}`}
+            {[userProfile.name, userProfile.age && String(userProfile.age)]
+              .filter(Boolean)
+              .join(', ')}
           </Text>
           <Text style={styles.location}>
             <MapPin size={14} color="#6B7280" />  {userProfile.location}
