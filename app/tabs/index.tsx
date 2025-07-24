@@ -1,4 +1,4 @@
-import { Clock, ListFilter as Filter, MapPin, MoveHorizontal as MoreHorizontal, Search, Star, Users, Zap } from 'lucide-react-native';
+import { CircleDollarSign, Clock, ListFilter as Filter, MapPin, MoveHorizontal as MoreHorizontal, Search, Users, Zap } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   Dimensions,
@@ -24,7 +24,6 @@ interface Ad {
   duration?: string;
   description: string;
   isProfessional: boolean;
-  rating?: number;
   price?: string;
 }
 
@@ -42,7 +41,6 @@ export default function HomeScreen() {
       workoutType: 'Personal Training',
       description: 'Certified personal trainer specializing in strength training and weight loss',
       isProfessional: true,
-      rating: 4.9,
       price: '$80/hour'
     },
     {
@@ -65,7 +63,6 @@ export default function HomeScreen() {
       workoutType: 'Yoga & Pilates',
       description: 'Certified yoga instructor offering private and group sessions',
       isProfessional: true,
-      rating: 4.8,
       price: '$60/hour'
     },
     {
@@ -125,10 +122,10 @@ export default function HomeScreen() {
             </View>
           )}
           
-          {ad.isProfessional && ad.rating && (
+          {ad.isProfessional && (
             <View style={styles.detailRow}>
-              <Star size={14} color="#F59E0B" />
-              <Text style={styles.detailText}>{ad.rating} • {ad.price}</Text>
+              <CircleDollarSign size={14} color="#6B7280" />
+              <Text style={styles.detailText}>{ad.price}</Text>
             </View>
           )}
         </View>
