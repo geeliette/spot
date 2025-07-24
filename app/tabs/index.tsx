@@ -1,4 +1,5 @@
-import { Clock, ListFilter as Filter, MapPin, MoveHorizontal as MoreHorizontal, Search, Star, Users, Zap } from 'lucide-react-native';
+import { router } from 'expo-router';
+import { CircleDollarSign, Clock, ListFilter as Filter, MapPin, MoveHorizontal as MoreHorizontal, Search, Users, Zap } from 'lucide-react-native';
 import { useState } from 'react';
 import {
   Dimensions,
@@ -11,6 +12,7 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useChatStore } from '../lib/chatStore';
 
 const { width } = Dimensions.get('window');
 
@@ -24,13 +26,15 @@ interface Ad {
   duration?: string;
   description: string;
   isProfessional: boolean;
-  rating?: number;
   price?: string;
 }
 
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showProfessionalOnly, setShowProfessionalOnly] = useState(false);
+
+  const chats = useChatStore(state => state.chats);
+  const createChat = useChatStore(state => state.createChat);
 
   const ads: Ad[] = [
     {
@@ -42,7 +46,6 @@ export default function HomeScreen() {
       workoutType: 'Personal Training',
       description: 'Certified personal trainer specializing in strength training and weight loss',
       isProfessional: true,
-      rating: 4.9,
       price: '$80/hour'
     },
     {
@@ -65,7 +68,6 @@ export default function HomeScreen() {
       workoutType: 'Yoga & Pilates',
       description: 'Certified yoga instructor offering private and group sessions',
       isProfessional: true,
-      rating: 4.8,
       price: '$60/hour'
     },
     {
@@ -125,10 +127,10 @@ export default function HomeScreen() {
             </View>
           )}
           
-          {ad.isProfessional && ad.rating && (
+          {ad.isProfessional && (
             <View style={styles.detailRow}>
-              <Star size={14} color="#F59E0B" />
-              <Text style={styles.detailText}>{ad.rating} • {ad.price}</Text>
+              <CircleDollarSign size={14} color="#6B7280" />
+              <Text style={styles.detailText}>{ad.price}</Text>
             </View>
           )}
         </View>
@@ -137,16 +139,22 @@ export default function HomeScreen() {
         
         <TouchableOpacity 
           style={[
-            styles.connectButton,
-            ad.isProfessional && styles.professionalButton
+            styles.connectButton
           ]}
           activeOpacity={0.8}
+          onPress={() => {
+            // if chat does not exist, create new chat
+            if (!chats[ad.id]) {
+              createChat(ad.id, { name: ad.name, avatar: ad.image });    // seed first message
+            }
+            // navigate to /chat/[id]
+            router.push({ pathname: '/chat/[id]', params: { id: ad.id } });
+          }}
         >
           <Text style={[
-            styles.connectButtonText,
-            ad.isProfessional && styles.professionalButtonText
+            styles.connectButtonText
           ]}>
-            {ad.isProfessional ? 'Book Session' : 'Connect'}
+            {'Connect'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -378,9 +386,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-  },
-  professionalButton: {
-    backgroundColor: '#F97316',
   },
   connectButtonText: {
     fontSize: 16,
