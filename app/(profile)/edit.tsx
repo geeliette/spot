@@ -3,13 +3,16 @@ import { useRouter } from 'expo-router';
 import { Camera } from 'lucide-react-native';
 import React from 'react';
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUser } from '../context/UserContext';
@@ -44,6 +47,11 @@ export default function EditProfileScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={15}
+      >
       <View style={styles.avatarWrap}>
         <Image source={{ uri: draft.avatar }} style={styles.avatar} />
         <TouchableOpacity style={styles.cameraBtn} onPress={changeAvatar}>
@@ -63,6 +71,12 @@ export default function EditProfileScreen() {
           label="Location"
           value={draft.location}
           onChange={handle('location')}
+        />
+        <Field
+          label="Age"
+          value={String(draft.age)}
+          keyboardType="number-pad"
+          onChange={handle('age')}
         />
         <Field
           label="Workout Frequency"
@@ -89,6 +103,7 @@ export default function EditProfileScreen() {
           <Text style={styles.saveTxt}>Save</Text>
         </TouchableOpacity>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -97,19 +112,29 @@ const Field = ({
   label,
   value,
   onChange,
+  keyboardType,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  keyboardType?: TextInputProps['keyboardType'];
 }) => (
   <View style={styles.field}>
     <Text style={styles.label}>{label}</Text>
-    <TextInput value={value} onChangeText={onChange} style={styles.input} />
+    <TextInput 
+      value={value} 
+      onChangeText={onChange}
+      keyboardType={keyboardType}
+      style={styles.input} 
+    />
   </View>
 );
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
+  safeArea: { 
+    flex: 1,
+    backgroundColor: '#f9fafb' 
+  },
 
   avatarWrap: {
     alignSelf: 'center',
@@ -119,9 +144,7 @@ const styles = StyleSheet.create({
   avatar: { 
     width: 115, 
     height: 115, 
-    borderRadius: 60,
-    borderWidth: 3,
-    borderColor: '#FFFFFF', 
+    borderRadius: 60
   },
 
   cameraBtn: {
@@ -150,6 +173,8 @@ const styles = StyleSheet.create({
   formContainer: {
     flexGrow: 1,
     paddingHorizontal: 40,
+    paddingTop: 15,
+    paddingBottom: 15,
     justifyContent: 'center',
   },
 

@@ -70,7 +70,7 @@ export default function ChatsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView edges={['top']} style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Chats</Text>
         <Text style={styles.subtitle}>Stay connected with your workout partners</Text>
