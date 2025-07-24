@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { CircleDollarSign, Clock, ListFilter as Filter, MapPin, MoveHorizontal as MoreHorizontal, Search, Users, Zap } from 'lucide-react-native';
 import { useState } from 'react';
 import {
@@ -11,6 +12,7 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useChatStore } from '../lib/chatStore';
 
 const { width } = Dimensions.get('window');
 
@@ -30,6 +32,9 @@ interface Ad {
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showProfessionalOnly, setShowProfessionalOnly] = useState(false);
+
+  const chats = useChatStore(state => state.chats);
+  const createChat = useChatStore(state => state.createChat);
 
   const ads: Ad[] = [
     {
@@ -134,16 +139,22 @@ export default function HomeScreen() {
         
         <TouchableOpacity 
           style={[
-            styles.connectButton,
-            ad.isProfessional && styles.professionalButton
+            styles.connectButton
           ]}
           activeOpacity={0.8}
+          onPress={() => {
+            // if chat does not exist, create new chat
+            if (!chats[ad.id]) {
+              createChat(ad.id, { name: ad.name, avatar: ad.image });    // seed first message
+            }
+            // navigate to /chat/[id]
+            router.push({ pathname: '/chat/[id]', params: { id: ad.id } });
+          }}
         >
           <Text style={[
-            styles.connectButtonText,
-            ad.isProfessional && styles.professionalButtonText
+            styles.connectButtonText
           ]}>
-            {ad.isProfessional ? 'Book Session' : 'Connect'}
+            {'Connect'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -375,9 +386,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
-  },
-  professionalButton: {
-    backgroundColor: '#F97316',
   },
   connectButtonText: {
     fontSize: 16,

@@ -5,7 +5,7 @@ export type Message = {
   chatId: string;
   text: string;
   sender: 'me' | 'them';
-  ts: number;               // epoch ms
+  ts: number; // epoch ms
 };
 
 export type Chat = {
@@ -22,14 +22,17 @@ export type Chat = {
 type ChatState = {
   chats: Record<string, Chat>;
 
-  /** send a message as “me” */
+  // send a message as “me”
   send: (chatId: string, text: string) => void;
 
-  /** simulate an incoming message from “them” */
+  // simulate an incoming message from “them”
   receive: (chatId: string, text: string) => void;
 
-  /** reset unread counter when user opens the chat */
+  // reset unread counter when user opens the chat 
   markRead: (chatId: string) => void;
+
+  // create empty chat if it does not exist
+  createChat: (chatId: string, peer: { name: string, avatar: string }) => void;
 };
 
 /* ---------- helper: simple “time ago” ---------- */
@@ -156,6 +159,22 @@ export const useChatStore = create<ChatState>((set) => ({
           [chatId]: { ...chat, unreadCount: 0 },
         },
       };
+    }),
+
+    createChat: (chatId, peer) =>
+    set((state) => {
+      if (state.chats[chatId]) return state;            // already there
+      const empty: Chat = {
+        id: chatId,
+        name: peer.name,
+        avatar: peer.avatar,
+        isOnline: false,
+        lastMessage: '',
+        timestamp: '',
+        unreadCount: 0,
+        messages: [],
+      };
+      return { chats: { ...state.chats, [chatId]: empty } };
     }),
 }));
 

@@ -39,6 +39,13 @@ export default function ChatScreen() {
           </View>
         )}
         contentContainerStyle={{ padding: 16 }}
+        
+        // while chat is empty
+        ListEmptyComponent={() => (
+          <View>
+            <Text style={styles.emptyTxt}>Send a message to start connecting!</Text>
+          </View>
+        )}
       />
 
       {/* input */}
@@ -63,12 +70,33 @@ export default function ChatScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { flexDirection:'row',alignItems:'center',gap:16,padding:16,borderBottomWidth:1,borderColor:'#E5E7EB' },
+  header: { 
+    flexDirection:'row',
+    alignItems:'center',
+    gap:16,
+    padding:16,
+    borderBottomWidth:1,
+    borderColor:'#E5E7EB' 
+  },
   title:  { fontSize:18,fontWeight:'600' },
   bubble: { padding:10,borderRadius:12,marginVertical:4,maxWidth:'75%' },
   mine:   { backgroundColor:'#8B5CF6',alignSelf:'flex-end' },
   theirs: { backgroundColor:'#E5E7EB',alignSelf:'flex-start' },
   inputBar:{ flexDirection:'row',alignItems:'center',padding:12,borderTopWidth:1,borderColor:'#cecfd3' },
   input:  { flex:1,fontSize:16,padding:10,backgroundColor:'#F3F4F6',borderRadius:8 },
-  sendBtn:{ backgroundColor:'#8B5CF6',width:55,height:48,borderRadius:24,alignItems:'center',justifyContent:'center',marginLeft:8 },
+  sendBtn:{ 
+    backgroundColor:'#8B5CF6',
+    width:55,
+    height:48,
+    borderRadius:24,
+    alignItems:'center',
+    justifyContent:'center',
+    marginLeft:8 
+  },
+  emptyTxt: {
+    fontSize: 18,
+    color: '#6B7280',
+    textAlign: 'center',
+    fontStyle: 'italic'
+  },
 });
